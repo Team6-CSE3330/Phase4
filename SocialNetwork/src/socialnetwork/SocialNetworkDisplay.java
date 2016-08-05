@@ -40,70 +40,63 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.JList;
 import javax.swing.JInternalFrame;
 import java.awt.GridBagLayout;
+import javax.swing.BoxLayout;
+import javax.swing.ListSelectionModel;
 
 public class SocialNetworkDisplay extends JFrame {
 
-	private JPanel contentPane;
-	private JList<String> friendsList;
 
 
-	/**
-	 * Create the frame.
-	 */
-	public SocialNetworkDisplay() {
-		setBackground(Color.WHITE);
-		getContentPane().setBackground(Color.WHITE);
-		getContentPane().setLayout(new BorderLayout(0,0));
-                
-		
-		JPanel panelFriendsList = new JPanel();
-		panelFriendsList.setBackground(Color.WHITE);
-		getContentPane().add(panelFriendsList, BorderLayout.WEST);
-                panelFriendsList.setSize(new Dimension(150,250));  
-                
-		panelFriendsList.setLayout(null);
-		
-		JLabel lblFriendsList = new JLabel("Friends List");
-		lblFriendsList.setFont(new Font("Segoe UI", Font.PLAIN, 20));
-		lblFriendsList.setBounds(12, 13, 128, 27);
-		panelFriendsList.add(lblFriendsList);
-		
-		DefaultListModel<String> friendListModel = new DefaultListModel<>();
-		friendListModel.addElement("Edward F");
-		friendListModel.addElement("Ameera K");		
-		
-		friendsList = new JList<>(friendListModel);
-		
-		friendsList.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				if(!e.getValueIsAdjusting()) {
-					final List<String> selectedValuesList;
-					selectedValuesList = friendsList.getSelectedValuesList();
-					System.out.println(selectedValuesList);
-				}
-			}
-		});
-		
-		friendsList.setBounds(12, 53, 178, 651);
-		panelFriendsList.add(friendsList);
-		
-		JPanel panelLoginSearch = new JPanel();
-		panelLoginSearch.setBackground(new Color(0, 0, 128));
-		getContentPane().add(panelLoginSearch, BorderLayout.NORTH);
-		
-		JPanel panelStatus = new JPanel();
-		panelStatus.setBackground(Color.WHITE);
-		getContentPane().add(panelStatus, BorderLayout.CENTER);
-		
-		JPanel panelChats = new JPanel();
-		panelChats.setBackground(Color.WHITE);
-		getContentPane().add(panelChats, BorderLayout.EAST);
-		
-		
-	}
+
         public static void main(String [] args)
         {
-            SocialNetworkDisplay social = new SocialNetworkDisplay();
-            social.setVisible(true);
+            JList<String> nameList;
+            DefaultListModel<String> listModel = new DefaultListModel<>(); 
+            JFrame frame = new JFrame();
+            JPanel panel1 = new JPanel();
+            JPanel panel2 = new JPanel();
+            JPanel panel3 = new JPanel();
+            JPanel panel4 = new JPanel();
+            JLabel label1 = new JLabel("FRIENDS LIST");
+
+            panel4.add(label1);
+            listModel.addElement("Ameera");
+            listModel.addElement("Edward");
+            nameList = new JList<>(listModel); 
+            panel1.add(nameList);
+            nameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            
+            frame.setBackground(Color.WHITE);
+            frame.setLayout(new BorderLayout());
+            frame.add(panel1, BorderLayout.WEST);  
+            frame.add(panel2, BorderLayout.EAST);
+            frame.add(panel3, BorderLayout.CENTER);
+            panel1.add(panel4, BorderLayout.NORTH);
+            
+            panel1.setBackground(Color.WHITE);            
+            panel1.setPreferredSize(new Dimension(450,450));
+            
+            panel2.setBackground(Color.WHITE);
+            panel2.setPreferredSize(new Dimension(450,450));
+            
+            panel3.setBackground(Color.WHITE);
+            panel3.setPreferredSize(new Dimension(450,450));
+            
+            panel4.setBackground(Color.WHITE);
+            panel4.setPreferredSize(new Dimension(100,50));
+            
+            nameList.addListSelectionListener(new ListSelectionListener() { 
+            @Override
+            public void valueChanged(ListSelectionEvent e) 
+            { 
+                if(!e.getValueIsAdjusting()) { 
+                    final List<String> selectedValuesList = nameList.getSelectedValuesList(); 
+                    System.out.println(selectedValuesList); 
+                } 
+            } 
+            });
+                        
+            frame.setVisible(true);
+            
         }
 }
