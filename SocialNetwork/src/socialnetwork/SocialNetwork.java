@@ -7,23 +7,88 @@ package socialnetwork;
 import java.sql.*;
 import java.io.*;
 import javax.swing.*;
-/**
- *
+import java.util.*;
+import java.lang.String;
+ /*
  * @author AmeeraK
  */
 public class SocialNetwork {
+/* File name : JDBCconnect.java */
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) throws SQLException {
-         final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-         
-         Connection conn = DriverManager.getConnection("jdbc:mysql://address=(protocol=tcp)(host=omega.uta.edu) (port=3306) (user=axk2904) (password=April123)/axk2904"); 
-         System.out.println(conn.getSchema());
-         
-        
-        
-    }
-    
+  Connection conn;
+   String hostname, database;
+
+   public SocialNetwork(String sys, String data) {
+      hostname = sys;
+      database = data;
+   }
+
+   public boolean OpenConnection() throws SQLException, IOException {
+
+      try {
+         Class.forName("oracle.jdbc.driver.OracleDriver");
+      }
+      catch (ClassNotFoundException e) {
+         System.out.println("Could not load the driver.");
+         e.printStackTrace();
+         return false;
+      }
+      try {
+         if (hostname.equals("omega")) {
+            if (database.equals("CSE1"))
+               conn = DriverManager.getConnection
+               // substitute with your username and password
+               ("jdbc:oracle:thin:axk2904/April123@omega:1521:cse1");
+         }
+         return true;
+      }
+      catch (SQLException sql) {
+         sql.printStackTrace();
+         return false;
+      }
+   }
+
+   public void CloseConnection() throws SQLException {
+      conn.close();
+   }
+
+
+   public ResultSet ListAll() {
+      try {
+         Statement st = conn.createStatement();
+         ResultSet rset = st.executeQuery("select username from all_users order by username");
+         return rset;
+      }
+      catch (SQLException sql) {
+         sql.printStackTrace();
+         return null;
+      }
+   }
+
+   public static void main( String args[] )
+   {
+      ResultSet reset;
+      try {
+         SocialNetwork connect = new SocialNetwork("omega","CSE1");
+         // JDBCconnect connect = new JDBCconnect(args[0], args[1]);
+         if ( connect.OpenConnection() ) {
+            reset = connect.ListAll( );
+
+            while( reset.next() ) {
+               System.out.println(reset.getString("username"));
+            }
+         }
+
+         connect.CloseConnection();
+      }
+      catch (SQLException exception) {
+         System.out.println("\nSQLException" + exception.getMessage()+"\n");
+      }
+      catch ( IOException e) {
+         e.printStackTrace();
+      }
+   }
 }
+        
+           
+
