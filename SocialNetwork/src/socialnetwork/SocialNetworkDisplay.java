@@ -56,7 +56,7 @@ public class SocialNetworkDisplay extends JFrame {
 		
 		JPanel panelFriendsList = new JPanel();
 		panelFriendsList.setBackground(Color.WHITE);
-		getContentPane().add(panelFriendsList, BorderLayout.CENTER);
+		getContentPane().add(panelFriendsList, BorderLayout.WEST);
 		panelFriendsList.setLayout(null);
 		
 		JLabel lblFriendsList = new JLabel("Friends List");
@@ -71,13 +71,13 @@ public class SocialNetworkDisplay extends JFrame {
 		friendsList = new JList<>(friendListModel);
 		
 		friendsList.addListSelectionListener(new ListSelectionListener() {
-			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				if (!e.getValueIsAdjusting()) {
-					final List<String> selectedValuesList = friendsList.getSelectedValuesList();
+				if(!e.getValueIsAdjusting()) {
+					final List<String> selectedValuesList;
+					selectedValuesList = friendsList.getSelectedValuesList();
 					System.out.println(selectedValuesList);
-	            }
-	        }
+				}
+			}
 		});
 		
 		friendsList.setBounds(12, 53, 178, 651);
@@ -89,7 +89,7 @@ public class SocialNetworkDisplay extends JFrame {
 		
 		JPanel panelStatus = new JPanel();
 		panelStatus.setBackground(Color.WHITE);
-		getContentPane().add(panelStatus, BorderLayout.SOUTH);
+		getContentPane().add(panelStatus, BorderLayout.CENTER);
 		
 		JPanel panelChats = new JPanel();
 		panelChats.setBackground(Color.WHITE);
