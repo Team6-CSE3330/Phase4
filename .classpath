@@ -2,5 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="SocialNetwork/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/Edward/Documents/Assignments/Phase4/SocialNetwork/ojdbc7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -13,3 +13,5 @@ hs_err_pid*
 /SocialNetwork/nbproject/private/
 /SocialNetwork/build/
 /bin/
+
+.classpath

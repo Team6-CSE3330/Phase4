@@ -35,11 +35,13 @@ public class SocialNetwork {
       }
 
       try {
+    	  String name = "jdbc:oracle:thin:@uta-smarthospital.cvx1abf3lv8q.us-west-2.rds.amazonaws.com:3306:smart_hospital";
+    	  System.out.println("" + name.length());
+    	  
          if (hostname.equals("omega.uta.edu")) {
             if (database.equals("CSE1"))
-               conn = DriverManager.getConnection
-               // substitute with your username and password
-               ("jdbc:oracle:thin:@omega.uta.edu:1521:axk2904", "axk2904@omega.uta.edu", "April123");
+               conn = DriverManager.getConnection//("jdbc:oracle:thin:@omega.uta.edu:1521:axk2904", "axk2904@omega.uta.edu", "April123");
+               ("jdbc:oracle:thin:@uta-smarthospital.cvx1abf3lv8q.us-west-2.rds.amazonaws.com:3306:smart_hospital", "utasmart", "utasmart");
          }
          return true;
       }
