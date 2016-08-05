@@ -33,12 +33,13 @@ public class SocialNetwork {
          e.printStackTrace();
          return false;
       }
+
       try {
-         if (hostname.equals("omega")) {
+         if (hostname.equals("omega.uta.edu")) {
             if (database.equals("CSE1"))
                conn = DriverManager.getConnection
                // substitute with your username and password
-               ("jdbc:oracle:thin:axk2904/April123@omega:1521:cse1");
+               ("jdbc:oracle:thin:@omega.uta.edu:1521:axk2904", "axk2904@omega.uta.edu", "April123");
          }
          return true;
       }
@@ -69,16 +70,18 @@ public class SocialNetwork {
    {
       ResultSet reset;
       try {
-         SocialNetwork connect = new SocialNetwork("omega","CSE1");
+         SocialNetwork connect = new SocialNetwork("omega.uta.edu","CSE1");
          // JDBCconnect connect = new JDBCconnect(args[0], args[1]);
-         if ( connect.OpenConnection() ) {
+         /*if ( connect.OpenConnection() ) {
             reset = connect.ListAll( );
 
             while( reset.next() ) {
                System.out.println(reset.getString("username"));
             }
          }
-
+         
+          */
+         connect.OpenConnection();
          connect.CloseConnection();
       }
       catch (SQLException exception) {
