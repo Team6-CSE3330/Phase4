@@ -13,85 +13,112 @@ import java.lang.String;
  * @author AmeeraK
  */
 public class SocialNetwork {
-/* File name : JDBCconnect.java */
+	
+	private int My_ID;
 
-  Connection conn;
-   String hostname, database;
+	private Connection conn;
+	private String hostname, database;
+    private final static String omega = "omega.uta.edu:3306/";
+    //database is "axk2904", user name is "axk2904" for omega
 
-   public SocialNetwork(String sys, String data) {
-      hostname = sys;
-      database = data;
-   }
-
-   public boolean OpenConnection() throws SQLException, IOException {
-
-      try {
-         Class.forName("oracle.jdbc.driver.OracleDriver");
-      }
-      catch (ClassNotFoundException e) {
-         System.out.println("Could not load the driver.");
-         e.printStackTrace();
-         return false;
-      }
-
-      try {
-    	  String name = "jdbc:oracle:thin:@uta-smarthospital.cvx1abf3lv8q.us-west-2.rds.amazonaws.com:3306:smart_hospital";
-    	  System.out.println("" + name.length());
-    	  
-         if (hostname.equals("omega.uta.edu")) {
-            if (database.equals("CSE1"))
-               conn = DriverManager.getConnection//("jdbc:oracle:thin:@omega.uta.edu:1521:axk2904", "axk2904@omega.uta.edu", "April123");
-               ("jdbc:oracle:thin:@uta-smarthospital.cvx1abf3lv8q.us-west-2.rds.amazonaws.com:3306:smart_hospital", "utasmart", "utasmart");
-         }
-         return true;
-      }
-      catch (SQLException sql) {
-         sql.printStackTrace();
-         return false;
-      }
-   }
-
-   public void CloseConnection() throws SQLException {
-      conn.close();
-   }
-
-
-   public ResultSet ListAll() {
-      try {
-         Statement st = conn.createStatement();
-         ResultSet rset = st.executeQuery("select username from all_users order by username");
-         return rset;
-      }
-      catch (SQLException sql) {
-         sql.printStackTrace();
-         return null;
-      }
-   }
-
-   public static void main( String args[] )
-   {
-      ResultSet reset;
-      try {
-         SocialNetwork connect = new SocialNetwork("omega.uta.edu","CSE1");
-         // JDBCconnect connect = new JDBCconnect(args[0], args[1]);
-         /*if ( connect.OpenConnection() ) {
-            reset = connect.ListAll( );
+    public static void main( String args[] ) {
+ 	   ResultSet reset;
+ 	   try {
+ 		   SocialNetwork connect = new SocialNetwork(omega, "axk2904");
+          
+ 		   if ( connect.OpenConnection("axk2904", "April123") ) {
+ 			   reset = connect.ListAll( );
 
             while( reset.next() ) {
-               System.out.println(reset.getString("username"));
+                System.out.println(reset.getString("email"));
             }
-         }
-         
-          */
-         connect.OpenConnection();
-         connect.CloseConnection();
-      }
-      catch (SQLException exception) {
-         System.out.println("\nSQLException" + exception.getMessage()+"\n");
-      }
-      catch ( IOException e) {
-         e.printStackTrace();
-      }
+        }
+          
+          connect.CloseConnection();
+       }
+       catch (SQLException exception) {
+          System.out.println("\nSQLException" + exception.getMessage()+"\n");
+       }
+       catch ( IOException e) {
+          e.printStackTrace();
+       }
+    }
+
+    public SocialNetwork(String hostname, String database) {
+    	this.hostname = hostname;
+    	this.database = database;
+    }
+
+	public boolean OpenConnection(String userName, String password) throws SQLException, IOException {
+		   //DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
+		try {	  
+			conn = DriverManager.getConnection("jdbc:mysql://" + this.hostname + this.database + "?user=" + userName + "&password=" + password);
+			return true;
+		}
+		catch (SQLException sql) {
+			sql.printStackTrace();
+			return false;
+		}
+	}
+	
+	public void CloseConnection() throws SQLException {
+		conn.close();
+	}
+	
+	
+	public ResultSet ListAll() {
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rset = st.executeQuery("select email from dummy_login_table order by email");
+			return rset;
+		} catch (SQLException sql) {
+			sql.printStackTrace();
+			return null;
+		}
+   }
+   
+   public ResultSet getAllFriends(int My_ID) {
+	    try {
+	    	Statement st = conn.createStatement();
+	        ResultSet rset = st.executeQuery("  ");
+	        return rset;
+	    } catch (SQLException sql) {
+	        sql.printStackTrace();
+	        return null;
+	    }
+   }
+   
+   public ResultSet findFriend(String firstName, String lastName) {
+	    try {
+	    	Statement st = conn.createStatement();
+	        ResultSet rset = st.executeQuery("  ");
+	        return rset;
+	    } catch (SQLException sql) {
+	        sql.printStackTrace();
+	        return null;
+	    }
+   }
+   
+   public ResultSet viewMessages(int My_ID, int Friends_ID) {
+	    try {
+	    	Statement st = conn.createStatement();
+	        ResultSet rset = st.executeQuery("  ");
+	        return rset;
+	    } catch (SQLException sql) {
+	        sql.printStackTrace();
+	        return null;
+	    }
+   }
+   
+   public ResultSet getAllOfMyGroups(int My_ID) {
+	    try {
+	    	Statement st = conn.createStatement();
+	        ResultSet rset = st.executeQuery("  ");
+	        return rset;
+	    } catch (SQLException sql) {
+	        sql.printStackTrace();
+	        return null;
+	    }
    }
 }
         
