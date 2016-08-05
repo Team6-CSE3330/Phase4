@@ -30,6 +30,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.Color;
+import java.awt.Dimension;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
@@ -52,11 +53,14 @@ public class SocialNetworkDisplay extends JFrame {
 	public SocialNetworkDisplay() {
 		setBackground(Color.WHITE);
 		getContentPane().setBackground(Color.WHITE);
-		getContentPane().setLayout(new BorderLayout(0, 0));
+		getContentPane().setLayout(new BorderLayout(0,0));
+                
 		
 		JPanel panelFriendsList = new JPanel();
 		panelFriendsList.setBackground(Color.WHITE);
 		getContentPane().add(panelFriendsList, BorderLayout.WEST);
+                panelFriendsList.setSize(new Dimension(150,250));  
+                
 		panelFriendsList.setLayout(null);
 		
 		JLabel lblFriendsList = new JLabel("Friends List");
@@ -97,4 +101,9 @@ public class SocialNetworkDisplay extends JFrame {
 		
 		
 	}
+        public static void main(String [] args)
+        {
+            SocialNetworkDisplay social = new SocialNetworkDisplay();
+            social.setVisible(true);
+        }
 }
