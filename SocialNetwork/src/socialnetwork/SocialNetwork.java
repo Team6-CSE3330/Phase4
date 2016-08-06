@@ -13,46 +13,42 @@ import java.lang.String;
  * @author AmeeraK
  */
 public class SocialNetwork {
-	
-	private int My_ID;
-
 	private Connection conn;
-	private String hostname, database;
-    private final static String omega = "omega.uta.edu:3306/";
-    //database is "axk2904", user name is "axk2904" for omega
+	private String userName, password;
+    //private final static String omega = "omega.uta.edu:3306/";
+    //private final static String omega_schema = "axk2904";
+    private final static String local_host = "127.0.0.1:3306/";
+    private final static String local_host_schema = "phase4";
 
     public static void main( String args[] ) {
- 	   ResultSet reset;
+ 	   ResultSet r;
+ 	   SocialNetwork socialnetwork = new SocialNetwork("root", "edward05");
  	   try {
- 		   SocialNetwork connect = new SocialNetwork(omega, "axk2904");
-          
- 		   if ( connect.OpenConnection("axk2904", "April123") ) {
- 			   reset = connect.ListAll( );
-
-            while( reset.next() ) {
-                System.out.println(reset.getString("email"));
-            }
+ 		   if ( socialnetwork.OpenConnection() ) { //local_host, "phase4"
+ 			  r = socialnetwork.viewPrivateMessages(4, 3);
+ 			  System.out.println("Messages from Kurt to Pinky");
+ 			  while( r.next() ) 
+ 				   System.out.println(r.getString("message") + " at " + r.getString("timestamp_"));
+ 		   }
+ 		  socialnetwork.CloseConnection();
+ 	   } catch (SQLException exception) {
+           System.out.println("\nSQLException" + exception.getMessage()+"\n");
+        } catch ( IOException e) {
+           e.printStackTrace();
         }
-          
-          connect.CloseConnection();
-       }
-       catch (SQLException exception) {
-          System.out.println("\nSQLException" + exception.getMessage()+"\n");
-       }
-       catch ( IOException e) {
-          e.printStackTrace();
-       }
     }
 
-    public SocialNetwork(String hostname, String database) {
-    	this.hostname = hostname;
-    	this.database = database;
+    public SocialNetwork(String userName, String password) {
+    	this.userName = userName;
+    	this.password = password;
     }
 
-	public boolean OpenConnection(String userName, String password) throws SQLException, IOException {
+    //String hostname, String database
+	public boolean OpenConnection() throws SQLException, IOException {
 		   //DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
 		try {	  
-			conn = DriverManager.getConnection("jdbc:mysql://" + this.hostname + this.database + "?user=" + userName + "&password=" + password);
+			conn = DriverManager.getConnection("jdbc:mysql://" + local_host + 
+					local_host_schema + "?useSSL=false&user=" + this.userName + "&password=" + this.password);
 			return true;
 		}
 		catch (SQLException sql) {
@@ -60,63 +56,116 @@ public class SocialNetwork {
 			return false;
 		}
 	}
-	
+
 	public void CloseConnection() throws SQLException {
 		conn.close();
 	}
-	
-	
-	public ResultSet ListAll() {
+
+	public ResultSet createNewMember(int myID, String msg) {
 		try {
 			Statement st = conn.createStatement();
-			ResultSet rset = st.executeQuery("select email from dummy_login_table order by email");
+			ResultSet rset = st.executeQuery("");
 			return rset;
 		} catch (SQLException sql) {
 			sql.printStackTrace();
 			return null;
 		}
+	}
+
+	public ResultSet getMemberInformation(int myID) {
+		  String sql 
+		    = "SELECT MEMBER.* "
+		    + "FROM MEMBER "
+		    + "WHERE MEMBER.Member_ID =" + myID
+		    + ";";
+		 return executeQuery(sql);
+	}
+
+   public ResultSet getAllFriends(int myID) {
+        String sql 
+        	   = "SELECT MEMBER.Member_ID, MEMBER.Name "
+        	   + "FROM MEMBER "
+        	   + "WHERE MEMBER.Member_ID IN ("
+        	   +     "SELECT FRIEND_OF.Member_ID "
+        	   +     "FROM FRIEND_OF "
+        	   +     "WHERE FRIEND_OF.Owner_ID =" + myID
+        	   + ");";
+        return executeQuery(sql);
+   }
+
+   public ResultSet searchForMember(String name) {
+        String sql 
+           = "SELECT MEMBER.Member_ID, MEMBER.Name "
+           + "FROM MEMBER "
+           + "WHERE MEMBER.Name =\"" + name 
+           + "\";";
+        return executeQuery(sql);
+   }
+	
+	public ResultSet getMemberAddress(int myID) {
+        String sql 
+	        = "SELECT ADDRESS.* "
+	        + "FROM ADDRESS "
+	        + "WHERE ADDRESS.Member_ID =" + myID 
+	        + ";";
+        return executeQuery(sql);
+	}
+	
+   public ResultSet addFriend(int myID, int friendsID) {
+       String sql 
+	       = "insert into friend_of "
+	       + "values (" + myID + friendsID
+	       + ");";
+	   return executeQuery(sql);
    }
    
-   public ResultSet getAllFriends(int My_ID) {
-	    try {
-	    	Statement st = conn.createStatement();
-	        ResultSet rset = st.executeQuery("  ");
-	        return rset;
-	    } catch (SQLException sql) {
-	        sql.printStackTrace();
-	        return null;
-	    }
+   public ResultSet removeFriend(int myID, int friendsID) {
+       String sql 
+	       = "delete from friend_of "
+	       + "where Owner_ID =" + myID + " and Member_ID =" + friendsID
+	       + ";";
+	   return executeQuery(sql);
    }
    
-   public ResultSet findFriend(String firstName, String lastName) {
-	    try {
-	    	Statement st = conn.createStatement();
-	        ResultSet rset = st.executeQuery("  ");
-	        return rset;
-	    } catch (SQLException sql) {
-	        sql.printStackTrace();
-	        return null;
-	    }
+   public ResultSet viewPrivateMessages(int myID, int friendsID) {
+       String sql 
+		   = "select Timestamp_, Message "
+		   + "from public_message "
+		   + "where Timestamp_ in ("
+		   +    "select Timestamp_ "
+		   +    "from private_message "
+		   +    "where (from_member =" + myID + " and to_member =" + friendsID + ") or "
+		   +          "(from_member =" + friendsID + " and to_member =" + myID + ")"
+		   + ") order by Timestamp_ asc;";
+	   return executeQuery(sql);
    }
-   
-   public ResultSet viewMessages(int My_ID, int Friends_ID) {
-	    try {
-	    	Statement st = conn.createStatement();
-	        ResultSet rset = st.executeQuery("  ");
-	        return rset;
-	    } catch (SQLException sql) {
-	        sql.printStackTrace();
-	        return null;
-	    }
-   }
-   
+   /*
    public ResultSet getAllOfMyGroups(int My_ID) {
+   }
+   
+   public ResultSet getMembersInMyGroup(int myID, int groupID) {
+   }
+   
+   public ResultSet createGroup(int myID, String groupName) {
+   }
+   
+   public ResultSet addFriendToGroup(int myID, int friendID, int groupID) {
+   }
+   
+   public ResultSet sendPrivateMessage(int myID, int friendID, String msg) {
+   }
+   
+   public ResultSet createPublicMessage(int myID, String msg) {
+   }
+   
+   public ResultSet messageMembersOfGroup(int myID, String msg, int groupID) {
+   }
+   */
+   private ResultSet executeQuery(String sql) {
 	    try {
-	    	Statement st = conn.createStatement();
-	        ResultSet rset = st.executeQuery("  ");
-	        return rset;
-	    } catch (SQLException sql) {
-	        sql.printStackTrace();
+	        return conn.createStatement().executeQuery(sql);
+	    } catch (SQLException e) {
+	        e.printStackTrace();
 	        return null;
 	    }
    }
