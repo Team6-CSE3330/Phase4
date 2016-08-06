@@ -25,10 +25,10 @@ public class SocialNetwork {
  	   SocialNetwork socialnetwork = new SocialNetwork("root", "edward05");
  	   try {
  		   if ( socialnetwork.OpenConnection() ) { //local_host, "phase4"
- 			  r = socialnetwork.viewPrivateMessages(4, 3);
- 			  System.out.println("Messages from Kurt to Pinky");
+ 			  r = socialnetwork.getMembersInMyGroup(2, 4);
+ 			  System.out.println("List members of my group");
  			  while( r.next() ) 
- 				   System.out.println(r.getString("message") + " at " + r.getString("timestamp_"));
+ 				   System.out.println("person: " + r.getString("name"));// + " is " + r.getString("name"));
  		   }
  		  socialnetwork.CloseConnection();
  	   } catch (SQLException exception) {
@@ -139,17 +139,36 @@ public class SocialNetwork {
 		   + ") order by Timestamp_ asc;";
 	   return executeQuery(sql);
    }
-   /*
-   public ResultSet getAllOfMyGroups(int My_ID) {
+   
+   public ResultSet addFriendToGroup(int friendID, int groupID) {
+       String sql 
+	       = "insert into group_member_id "
+	       + "values (" + groupID + friendID
+	       + ");";
+	   return executeQuery(sql);
+   }
+   
+   public ResultSet getAllOfMyGroups(int myID) {
+       String sql 
+	       = "select owns_group.Group_ID, g.Name "
+	       + "from owns_group, group_ as g "
+	       + "where owns_group.Owner_ID =" + myID 
+	       + " and g.Group_ID =owns_group.Group_ID;";
+	   return executeQuery(sql);
    }
    
    public ResultSet getMembersInMyGroup(int myID, int groupID) {
+       String sql 
+	       = "select distinct member.Name "
+	       + "from group_member_id, owns_group, member "
+	       + "where owns_group.Owner_ID =" + myID 
+	       + " and owns_group.Group_ID =" + groupID 
+	       + " and group_member_id.Group_ID =" + groupID
+	       + " and group_member_id.Member_ID = member.Member_ID;";
+	   return executeQuery(sql);
    }
-   
+   /*
    public ResultSet createGroup(int myID, String groupName) {
-   }
-   
-   public ResultSet addFriendToGroup(int myID, int friendID, int groupID) {
    }
    
    public ResultSet sendPrivateMessage(int myID, int friendID, String msg) {
