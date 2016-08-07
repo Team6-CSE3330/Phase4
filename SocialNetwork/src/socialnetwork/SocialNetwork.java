@@ -8,6 +8,7 @@ import java.sql.*;
 import java.io.*;
 import javax.swing.*;
 import java.util.*;
+import java.util.Date;
 import java.lang.String;
  /*
  * @author AmeeraK
@@ -111,20 +112,20 @@ public class SocialNetwork {
         return executeQuery(sql);
 	}
 	
-   public ResultSet addFriend(int myID, int friendsID) {
+   public boolean addFriend(int myID, int friendsID) {
        String sql 
 	       = "insert into friend_of "
-	       + "values (" + myID + friendsID
+	       + "values (" + myID + ", " + friendsID
 	       + ");";
-	   return executeQuery(sql);
+	   return executeQuery(sql) != null;
    }
    
-   public ResultSet removeFriend(int myID, int friendsID) {
+   public boolean removeFriend(int myID, int friendsID) {
        String sql 
 	       = "delete from friend_of "
 	       + "where Owner_ID =" + myID + " and Member_ID =" + friendsID
 	       + ";";
-	   return executeQuery(sql);
+	   return executeQuery(sql) != null;
    }
    
    public ResultSet viewPrivateMessages(int myID, int friendsID) {
@@ -140,12 +141,12 @@ public class SocialNetwork {
 	   return executeQuery(sql);
    }
    
-   public ResultSet addFriendToGroup(int friendID, int groupID) {
+   public boolean addFriendToGroup(int friendID, int groupID) {
        String sql 
 	       = "insert into group_member_id "
-	       + "values (" + groupID + friendID
+	       + "values (" + groupID + ", " + friendID
 	       + ");";
-	   return executeQuery(sql);
+	   return executeQuery(sql) != null;
    }
    
    public ResultSet getAllOfMyGroups(int myID) {
@@ -167,11 +168,21 @@ public class SocialNetwork {
 	       + " and group_member_id.Member_ID = member.Member_ID;";
 	   return executeQuery(sql);
    }
+   
+   public boolean sendPrivateMessage(int myID, int friendID, String msg) {
+	   String timestamp = new Date().toString();
+       String sql;
+       sql = "insert into public_message "
+    	       + "values (" + myID + ", \"" + timestamp + "\", \"" + msg
+    	       + "\");";
+       executeQuery(sql);
+       sql = "insert into private_message "
+	       + "values (" + myID + ", \"" + timestamp + "\", " + friendID
+	       + ");";
+	   return executeQuery(sql) != null;
+   }
    /*
    public ResultSet createGroup(int myID, String groupName) {
-   }
-   
-   public ResultSet sendPrivateMessage(int myID, int friendID, String msg) {
    }
    
    public ResultSet createPublicMessage(int myID, String msg) {
