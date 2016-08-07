@@ -134,8 +134,14 @@ public class SocialNetworkDisplay extends JFrame {
               button.addActionListener(new ActionListener() { 
               @Override
               public void actionPerformed(ActionEvent e) { 
-                  textfield.getText();
-                  //updatePrivateMessages with Text 
+                  sn.sendPrivateMessage(myid, myfriendsids.get(nameList.getSelectedIndex()), textfield.getText());
+                  try {
+                      createMessageList(nameList.getSelectedIndex());
+                      //updatePrivateMessages with Text 
+                  } catch (SQLException ex) {
+                      Logger.getLogger(SocialNetworkDisplay.class.getName()).log(Level.SEVERE, null, ex);
+                  }
+                  textfield.setText("");
                 
               } 
             });

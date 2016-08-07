@@ -175,11 +175,11 @@ public class SocialNetwork {
        sql = "insert into public_message "
     	       + "values (" + myID + ", \"" + timestamp + "\", \"" + msg
     	       + "\");";
-       executeQuery(sql);
+       executeUpdate(sql);
        sql = "insert into private_message "
 	       + "values (" + myID + ", \"" + timestamp + "\", " + friendID
 	       + ");";
-	   return executeQuery(sql) != null;
+	   return executeUpdate(sql) != 0;
    }
    /*
    public ResultSet createGroup(int myID, String groupName) {
@@ -197,6 +197,15 @@ public class SocialNetwork {
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	        return null;
+	    }
+   }
+   
+    private int executeUpdate(String sql) {
+	    try {
+	        return conn.createStatement().executeUpdate(sql);
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return 0;
 	    }
    }
 }
