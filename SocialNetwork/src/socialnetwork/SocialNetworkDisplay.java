@@ -55,17 +55,28 @@ public class SocialNetworkDisplay extends JFrame {
         final  int myid = 3;
         SocialNetwork sn = new SocialNetwork("root", "edward05");
         ArrayList<Integer> myfriendsids = new ArrayList<Integer>();
+        ArrayList<Integer> searchedids = new ArrayList<Integer>();
         JList<String> nameList;
+        JList<String> searchList;
         JList<String> messageList;
         DefaultListModel<String> listModel = new DefaultListModel<>(); 
         DefaultListModel<String> listModel2 = new DefaultListModel<>(); 
+        DefaultListModel<String> listModel3 = new DefaultListModel<>(); 
+        
         JFrame frame = new JFrame();
+        JFrame frame2 = new JFrame();
         JPanel panel1 = new JPanel();
         JPanel panel2 = new JPanel();
         JPanel panel3 = new JPanel();
         JPanel panel4 = new JPanel();
+        JPanel panel5 = new JPanel();
+        
         JButton button = new JButton("SEND");
+        JButton searchbutton = new JButton("SEARCH");
+        JButton addbutton = new JButton("ADD");
+
         JTextField textfield = new JTextField(25);
+        JTextField searchtext = new JTextField(25);
         
         public static void main(String [] args) throws IOException, SQLException
         {
@@ -85,11 +96,7 @@ public class SocialNetworkDisplay extends JFrame {
             panel1.add(nameList);
 //            
 //            r = socialnetwork.viewPrivateMessages(3, 4);
-
-            
-            
-         
-         
+             
             nameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             
             frame.setBackground(Color.WHITE);
@@ -101,8 +108,10 @@ public class SocialNetworkDisplay extends JFrame {
             
             panel1.setBackground(Color.WHITE);            
             panel1.setPreferredSize(new Dimension(450,450));
+            panel1.add(searchtext);
+            panel1.add(searchbutton);            
             
-            panel2.setBackground(Color.WHITE);
+            panel2.setBackground(Color.GRAY);
             panel2.setPreferredSize(new Dimension(450,450));
             
             panel3.setBackground(Color.WHITE);
@@ -112,6 +121,12 @@ public class SocialNetworkDisplay extends JFrame {
             panel4.setPreferredSize(new Dimension(100,300));
             panel4.add(textfield);
             panel4.add(button);
+            
+            panel1.add(panel5, BorderLayout.SOUTH);
+            panel1.setLayout(new GridLayout(3,1));
+            panel5.setBackground(Color.WHITE);
+            panel5.setPreferredSize(new Dimension(100,300));
+  
  
 
             
@@ -145,6 +160,19 @@ public class SocialNetworkDisplay extends JFrame {
                 
               } 
             });
+              
+              searchbutton.addActionListener(new ActionListener() { 
+              @Override
+              public void actionPerformed(ActionEvent e) { 
+                  try {            
+                      SocialNetworkPopUpDisplay(searchtext.getText());
+                  } catch (SQLException ex) {
+                      Logger.getLogger(SocialNetworkDisplay.class.getName()).log(Level.SEVERE, null, ex);
+                  }
+
+              } 
+            });           
+         
                         
             frame.setVisible(true);
             
@@ -170,6 +198,47 @@ public class SocialNetworkDisplay extends JFrame {
             
             
             System.out.println(friend + ", " + myfriendsids.get(friend));
+        }
+        public void SocialNetworkPopUpDisplay(String friendsearched) throws SQLException
+        {
+            ResultSet r = sn.searchForMember(friendsearched);
+            while(r.next())
+            {
+                listModel3.addElement(r.getString("Name"));
+                searchedids.add(r.getInt("Member_ID"));
+            }
+
+            
+            frame2.setVisible(true);
+            frame2.setBackground(Color.WHITE);
+            frame2.setLayout(new BorderLayout());
+            frame2.add(panel5, BorderLayout.CENTER);
+            
+            searchList = new JList<>(listModel3); 
+            panel5.add(searchList);
+
+            panel5.setBackground(Color.WHITE);            
+            panel5.setPreferredSize(new Dimension(450,450));
+            panel5.add(addbutton);
+            
+             addbutton.addActionListener(new ActionListener() { 
+              @Override
+              public void actionPerformed(ActionEvent e) { 
+                  sn.addFriend(myid, searchedids.get(searchList.getSelectedIndex()));
+                  frame2.setVisible(false);
+              } 
+            });      
+            searchList.addListSelectionListener(new ListSelectionListener() { 
+            @Override
+            public void valueChanged(ListSelectionEvent e) 
+            { 
+                if(!e.getValueIsAdjusting()) { 
+
+                    
+                } 
+            } 
+            });
+            
         }
         
 
