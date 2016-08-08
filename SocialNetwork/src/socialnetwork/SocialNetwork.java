@@ -6,12 +6,10 @@
 package socialnetwork;
 import java.sql.*;
 import java.io.*;
-import javax.swing.*;
-import java.util.*;
 import java.util.Date;
 import java.lang.String;
  /*
- * @author AmeeraK
+ * @author AmeeraK, EdwardF
  */
 public class SocialNetwork {
 	private Connection conn;
@@ -21,7 +19,7 @@ public class SocialNetwork {
     private final static String local_host = "127.0.0.1:3306/";
     private final static String local_host_schema = "phase4";
 
-    public static void main( String args[] ) {
+    /*public static void main( String args[] ) {
  	   ResultSet r;
  	   SocialNetwork socialnetwork = new SocialNetwork("root", "edward05");
  	   try {
@@ -37,7 +35,7 @@ public class SocialNetwork {
         } catch ( IOException e) {
            e.printStackTrace();
         }
-    }
+    }*/
 
     public SocialNetwork(String userName, String password) {
     	this.userName = userName;
@@ -63,22 +61,20 @@ public class SocialNetwork {
 	}
 
 	public boolean createNewMember(String name) {
-		int new_ID = 1;
-		ResultSet s = executeQuery("select Member_ID from member");
+		int new_ID = 0;
 		try {
-			if(s.last())
-				new_ID += s.getInt("Member_ID");
-			else
-				return false;
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-			return false;
-		}
+			new_ID = executeQuery("select count(*) from member").getInt("count(*)");
+		} catch (SQLException e) {  }
+		if(new_ID <= 0) return false;
+		
+		String phone_num = "817";
+		String password = "123456seven";
+		String email = name.toLowerCase() + "@mavs.uta.edu";
 			
        String sql 
 	       = "insert into member "
-	       + "values (" + new_ID + ", " + name
+	       + "values ('" + name + "', '" + phone_num + "', '" 
+	    		         + password + "', '" + email + "', " + new_ID
 	       + ");";
        return 0 < executeUpdate(sql);
 	}
@@ -170,7 +166,7 @@ public class SocialNetwork {
    
    public ResultSet getMembersInMyGroup(int myID, int groupID) {
        String sql 
-	       = "select distinct member.Name "
+	       = "select distinct member.Member_ID, member.Name "
 	       + "from group_member_id, owns_group, member "
 	       + "where owns_group.Owner_ID =" + myID 
 	       + " and owns_group.Group_ID =" + groupID 
@@ -183,9 +179,8 @@ public class SocialNetwork {
 	   String timestamp = new Date().toString();
        String sql;
        sql = "insert into public_message "
-    	       + "values (" + myID + ", \"" + timestamp + "\", \"" + msg
-    	       + "\");";
-       
+    	       + "values (" + myID + ", '" + timestamp + "', '" + msg
+    	       + "');";
        //Note, not calling createPublicMessage because we want timestamp to be the same between both
        //a difference of even a microsecond means they are different. Lastly, passing timestamp
        //means we would need to pass timestamp into that function from outside this class, meaning
@@ -207,13 +202,37 @@ public class SocialNetwork {
        return 0 < executeUpdate(sql);
    }
    
-   /*
-   public ResultSet createGroup(int myID, String groupName) {
+   public boolean createGroup(int myID, String groupName) {
+       String sql; int groupSize = 0;
+       
+       try {
+    	   groupSize = executeQuery("select count(*) from group_").getInt("count(*)");
+       } catch (SQLException e) {
+    	   // e.printStackTrace();
+       } // last number
+       
+       sql = "insert into group_ "
+    	       + "values (" + groupSize + ", \"" + groupName + "\", true"
+    	       + ");";
+       if (0 >= executeUpdate(sql)) return false;
+       
+       sql = "insert into owns_group "
+    		   + "values (" + myID + ", " + groupSize 
+    		   + ");";
+       return 0 < executeUpdate(sql);
    }
    
-   public ResultSet messageMembersOfGroup(int myID, String msg, int groupID) {
+   public boolean messageMembersOfGroup(int myID, String msg, int groupID) {
+       ResultSet r = getMembersInMyGroup(myID, groupID);
+       try {
+	       while(r.next()) {
+	    	   if(false == sendPrivateMessage(myID, r.getInt("Member_ID"), msg))
+	    		   return false;
+	       }
+       } catch(SQLException e) { return false; }
+       return true;
    }
-   */
+   
    private ResultSet executeQuery(String sql) {
 	    try {
 	        return conn.createStatement().executeQuery(sql);
