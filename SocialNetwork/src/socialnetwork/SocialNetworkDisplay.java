@@ -70,6 +70,7 @@ public class SocialNetworkDisplay extends JFrame {
         JPanel panel3 = new JPanel();
         JPanel panel4 = new JPanel();
         JPanel panel5 = new JPanel();
+        JPanel panel6 = new JPanel();
         
         JButton button = new JButton("SEND");
         JButton searchbutton = new JButton("SEARCH");
@@ -85,32 +86,16 @@ public class SocialNetworkDisplay extends JFrame {
         public SocialNetworkDisplay() throws SQLException, IOException
         {            
             sn.OpenConnection();
-            ResultSet r = sn.getAllFriends(myid);
-            while(r.next())
-            {
-                listModel.addElement(r.getString("Name"));
-                myfriendsids.add(r.getInt("Member_ID"));
-                
-            }
-            nameList = new JList<>(listModel); 
-            panel1.add(nameList);
 //            
 //            r = socialnetwork.viewPrivateMessages(3, 4);
-             
-            nameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            
+
             frame.setBackground(Color.WHITE);
             frame.setLayout(new BorderLayout());
             panel3.setLayout(new GridLayout(3,1));
-            frame.add(panel1, BorderLayout.WEST);  
+
             frame.add(panel2, BorderLayout.CENTER);
             frame.add(panel3, BorderLayout.EAST);
-            
-            panel1.setBackground(Color.WHITE);            
-            panel1.setPreferredSize(new Dimension(450,450));
-            panel1.add(searchtext);
-            panel1.add(searchbutton);            
-            
+
             panel2.setBackground(Color.GRAY);
             panel2.setPreferredSize(new Dimension(450,450));
             
@@ -121,30 +106,15 @@ public class SocialNetworkDisplay extends JFrame {
             panel4.setPreferredSize(new Dimension(100,300));
             panel4.add(textfield);
             panel4.add(button);
-            
-            panel1.add(panel5, BorderLayout.SOUTH);
-            panel1.setLayout(new GridLayout(3,1));
+           
+            socialNetworkPanel1SetUp();            
+
             panel5.setBackground(Color.WHITE);
             panel5.setPreferredSize(new Dimension(100,300));
-  
- 
-
+            panel5.add(searchtext);
+            panel5.add(searchbutton);  
             
-            nameList.addListSelectionListener(new ListSelectionListener() { 
-            @Override
-            public void valueChanged(ListSelectionEvent e) 
-            { 
-                if(!e.getValueIsAdjusting()) { 
-                    try {
-                        createMessageList(nameList.getSelectedIndex());
-                    } catch (SQLException ex) {
-                        Logger.getLogger(SocialNetworkDisplay.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-
-                    
-                } 
-            } 
-            });
+           
             
               button.addActionListener(new ActionListener() { 
               @Override
@@ -169,6 +139,7 @@ public class SocialNetworkDisplay extends JFrame {
                   } catch (SQLException ex) {
                       Logger.getLogger(SocialNetworkDisplay.class.getName()).log(Level.SEVERE, null, ex);
                   }
+                  searchtext.setText("");
 
               } 
             });           
@@ -199,6 +170,46 @@ public class SocialNetworkDisplay extends JFrame {
             
             System.out.println(friend + ", " + myfriendsids.get(friend));
         }
+        public void socialNetworkPanel1SetUp() throws SQLException
+        {
+            panel1.removeAll();
+            panel1.revalidate();
+            panel1.repaint();       
+            frame.add(panel1, BorderLayout.WEST);  
+            nameList = new JList<>(listModel); 
+            listModel.clear();
+            panel1.add(nameList);
+            nameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            
+            ResultSet r = sn.getAllFriends(myid);
+            while(r.next())
+            {
+                listModel.addElement(r.getString("Name"));
+                myfriendsids.add(r.getInt("Member_ID"));
+                
+            }        
+            
+            panel1.add(panel5, BorderLayout.SOUTH);
+            nameList.addListSelectionListener(new ListSelectionListener() { 
+            @Override
+            public void valueChanged(ListSelectionEvent e) 
+            { 
+                if(!e.getValueIsAdjusting()) { 
+                    try {
+                        createMessageList(nameList.getSelectedIndex());
+                    } catch (SQLException ex) {
+                        Logger.getLogger(SocialNetworkDisplay.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    
+                } 
+            } 
+            });
+            
+            panel1.setLayout(new GridLayout(3,1));             
+            panel1.setBackground(Color.WHITE);            
+            panel1.setPreferredSize(new Dimension(450,450));
+        }
         public void SocialNetworkPopUpDisplay(String friendsearched) throws SQLException
         {
             ResultSet r = sn.searchForMember(friendsearched);
@@ -208,34 +219,41 @@ public class SocialNetworkDisplay extends JFrame {
                 listModel3.addElement(r.getString("Name"));
                 searchedids.add(r.getInt("Member_ID"));
             }
-
             
             frame2.setVisible(true);
             frame2.setBackground(Color.WHITE);
             frame2.setLayout(new BorderLayout());
-            frame2.add(panel5, BorderLayout.CENTER);
+            frame2.add(panel6, BorderLayout.CENTER);
             
             searchList = new JList<>(listModel3); 
-            panel5.add(searchList);
+            panel6.add(searchList);
 
-            panel5.setBackground(Color.WHITE);            
-            panel5.setPreferredSize(new Dimension(450,450));
-            panel5.add(addbutton);
+            panel6.setBackground(Color.WHITE);            
+            panel6.setPreferredSize(new Dimension(450,450));
+            panel6.add(addbutton);
             
-             addbutton.addActionListener(new ActionListener() { 
+            addbutton.addActionListener(new ActionListener() { 
               @Override
               public void actionPerformed(ActionEvent e) { 
                   sn.addFriend(myid, searchedids.get(searchList.getSelectedIndex()));
                   sn.addFriend(searchedids.get(searchList.getSelectedIndex()), myid);
+                  try {
+                      socialNetworkPanel1SetUp();
+                  } catch (SQLException ex) {
+                      Logger.getLogger(SocialNetworkDisplay.class.getName()).log(Level.SEVERE, null, ex);
+                  }
                   frame2.setVisible(false);
+
               } 
             });      
+             
+             
             searchList.addListSelectionListener(new ListSelectionListener() { 
             @Override
             public void valueChanged(ListSelectionEvent e) 
             { 
                 if(!e.getValueIsAdjusting()) { 
-                 
+                    
                     
                 } 
             } 

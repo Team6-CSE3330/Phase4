@@ -190,7 +190,7 @@ public class SocialNetwork {
        //a difference of even a microsecond means they are different. Lastly, passing timestamp
        //means we would need to pass timestamp into that function from outside this class, meaning
        //we would need to generate timestamp outside.
-       if(executeUpdate(sql) > 0) return false;
+       if(executeUpdate(sql) <= 0) return false;
        
        sql = "insert into private_message "
 	       + "values (" + myID + ", \"" + timestamp + "\", " + friendID
