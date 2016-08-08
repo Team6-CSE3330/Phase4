@@ -52,7 +52,7 @@ import javax.swing.ListSelectionModel;
 
 public class SocialNetworkDisplay extends JFrame {
 
-        final  int myid = 3;
+        final  int myid = 5;
         SocialNetwork sn = new SocialNetwork("root", "edward05");
         ArrayList<Integer> myfriendsids = new ArrayList<Integer>();
         ArrayList<Integer> searchedids = new ArrayList<Integer>();
@@ -85,7 +85,7 @@ public class SocialNetworkDisplay extends JFrame {
         public SocialNetworkDisplay() throws SQLException, IOException
         {            
             sn.OpenConnection();
-            ResultSet r = sn.getAllFriends(2);
+            ResultSet r = sn.getAllFriends(myid);
             while(r.next())
             {
                 listModel.addElement(r.getString("Name"));
@@ -204,6 +204,7 @@ public class SocialNetworkDisplay extends JFrame {
             ResultSet r = sn.searchForMember(friendsearched);
             while(r.next())
             {
+                System.out.println(1);
                 listModel3.addElement(r.getString("Name"));
                 searchedids.add(r.getInt("Member_ID"));
             }
@@ -225,6 +226,7 @@ public class SocialNetworkDisplay extends JFrame {
               @Override
               public void actionPerformed(ActionEvent e) { 
                   sn.addFriend(myid, searchedids.get(searchList.getSelectedIndex()));
+                  sn.addFriend(searchedids.get(searchList.getSelectedIndex()), myid);
                   frame2.setVisible(false);
               } 
             });      
@@ -233,7 +235,7 @@ public class SocialNetworkDisplay extends JFrame {
             public void valueChanged(ListSelectionEvent e) 
             { 
                 if(!e.getValueIsAdjusting()) { 
-
+                 
                     
                 } 
             } 

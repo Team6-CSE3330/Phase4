@@ -100,7 +100,7 @@ public class SocialNetwork {
         	   +     "SELECT FRIEND_OF.Member_ID "
         	   +     "FROM FRIEND_OF "
         	   +     "WHERE FRIEND_OF.Owner_ID =" + myID
-        	   + "); order by Member.Name asc";
+        	   + ") order by Member.Name asc;";
         return executeQuery(sql);
    }
 
