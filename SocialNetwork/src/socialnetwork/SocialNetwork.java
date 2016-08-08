@@ -62,15 +62,25 @@ public class SocialNetwork {
 		conn.close();
 	}
 
-	public ResultSet createNewMember(int myID, String msg) {
+	public boolean createNewMember(String name) {
+		int new_ID = 1;
+		ResultSet s = executeQuery("select Member_ID from member");
 		try {
-			Statement st = conn.createStatement();
-			ResultSet rset = st.executeQuery("");
-			return rset;
-		} catch (SQLException sql) {
-			sql.printStackTrace();
-			return null;
+			if(s.last())
+				new_ID += s.getInt("Member_ID");
+			else
+				return false;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			return false;
 		}
+			
+       String sql 
+	       = "insert into member "
+	       + "values (" + new_ID + ", " + name
+	       + ");";
+       return 0 < executeUpdate(sql);
 	}
 
 	public ResultSet getMemberInformation(int myID) {
@@ -90,7 +100,7 @@ public class SocialNetwork {
         	   +     "SELECT FRIEND_OF.Member_ID "
         	   +     "FROM FRIEND_OF "
         	   +     "WHERE FRIEND_OF.Owner_ID =" + myID
-        	   + ");";
+        	   + "); order by Member.Name asc";
         return executeQuery(sql);
    }
 
@@ -112,12 +122,12 @@ public class SocialNetwork {
         return executeQuery(sql);
 	}
 	
-   public boolean addFriend(int myID, int friendsID) {
+   public boolean addFriend(int myID, int newFriendID) {
        String sql 
 	       = "insert into friend_of "
-	       + "values (" + myID + ", " + friendsID
+	       + "values (" + myID + ", " + newFriendID
 	       + ");";
-	   return executeQuery(sql) != null;
+       return 0 < executeUpdate(sql);
    }
    
    public boolean removeFriend(int myID, int friendsID) {
@@ -125,7 +135,7 @@ public class SocialNetwork {
 	       = "delete from friend_of "
 	       + "where Owner_ID =" + myID + " and Member_ID =" + friendsID
 	       + ";";
-	   return executeQuery(sql) != null;
+       return 0 < executeUpdate(sql);
    }
    
    public ResultSet viewPrivateMessages(int myID, int friendsID) {
@@ -146,7 +156,7 @@ public class SocialNetwork {
 	       = "insert into group_member_id "
 	       + "values (" + groupID + ", " + friendID
 	       + ");";
-	   return executeQuery(sql) != null;
+       return 0 < executeUpdate(sql);
    }
    
    public ResultSet getAllOfMyGroups(int myID) {
@@ -175,17 +185,30 @@ public class SocialNetwork {
        sql = "insert into public_message "
     	       + "values (" + myID + ", \"" + timestamp + "\", \"" + msg
     	       + "\");";
-       executeUpdate(sql);
+       
+       //Note, not calling createPublicMessage because we want timestamp to be the same between both
+       //a difference of even a microsecond means they are different. Lastly, passing timestamp
+       //means we would need to pass timestamp into that function from outside this class, meaning
+       //we would need to generate timestamp outside.
+       if(executeUpdate(sql) > 0) return false;
+       
        sql = "insert into private_message "
 	       + "values (" + myID + ", \"" + timestamp + "\", " + friendID
 	       + ");";
-	   return executeUpdate(sql) != 0;
-   }
-   /*
-   public ResultSet createGroup(int myID, String groupName) {
+	   return executeUpdate(sql) > 0;
    }
    
-   public ResultSet createPublicMessage(int myID, String msg) {
+   public boolean createPublicMessage(int myID, String msg) {
+	   String timestamp = new Date().toString();
+       String sql;
+       sql = "insert into public_message "
+    	       + "values (" + myID + ", \"" + timestamp + "\", \"" + msg
+    	       + "\");";
+       return 0 < executeUpdate(sql);
+   }
+   
+   /*
+   public ResultSet createGroup(int myID, String groupName) {
    }
    
    public ResultSet messageMembersOfGroup(int myID, String msg, int groupID) {
