@@ -27,8 +27,8 @@ import java.util.logging.Logger;
 
 public class SocialNetworkDisplay extends JFrame {
 
-	final  int myid = 5;
-	SocialNetwork sn = new SocialNetwork("root", "edward05");
+	private int myid = 5;
+	private SocialNetwork sn = new SocialNetwork("root", "edward05");
 	ArrayList<Integer> myfriendsids = new ArrayList<Integer>();
 	ArrayList<Integer> searchedids = new ArrayList<Integer>();
 	JList<String> nameList;
@@ -59,10 +59,13 @@ public class SocialNetworkDisplay extends JFrame {
 
 	public static void main(String [] args) throws IOException, SQLException
 	{
-		SocialNetworkDisplay snd = new SocialNetworkDisplay();
+		SocialNetworkDisplay snd = new SocialNetworkDisplay(0);
 	}
-	public SocialNetworkDisplay() throws SQLException, IOException
-	{            
+	public SocialNetworkDisplay(int id) throws SQLException, IOException
+	{
+		if(id != 0) myid = id;
+		else return; //a problem occurred with getting ID in query.
+		
 		sn.OpenConnection();
 
 		mainwindow.setBackground(Color.WHITE);
@@ -71,7 +74,10 @@ public class SocialNetworkDisplay extends JFrame {
 		mainwindow.add(LeftMainWindow, BorderLayout.WEST);  
 		mainwindow.add(CenterMainWindow, BorderLayout.CENTER);
 		mainwindow.add(RightMainWindow, BorderLayout.EAST);
-		mainwindow.setSize(1480, 800);
+		mainwindow.setSize(1350, 700);
+		ResultSet personal_info = sn.getMemberInformation(myid);
+		personal_info.next();
+		mainwindow.setTitle(personal_info.getString("Name"));
 
 		LeftMainWindow.setLayout(new GridLayout(3,1));             
 		LeftMainWindow.setBackground(Color.WHITE);            

@@ -63,6 +63,15 @@ public class SocialNetwork {
 				+ ";";
 		return executeQuery(sql);
 	}
+	
+	public int logIn(String email, String password) throws SQLException {
+		String sql = "";
+		sql = "select Member_ID from member where "
+				+ "Email ='" + email + "' and password_ ='" + password + "';";
+		ResultSet r = executeQuery(sql);
+		r.next();
+		return r.getInt("Member_ID");
+	}
 
 	public ResultSet getAllFriends(int myID) {
 		String sql 
@@ -222,6 +231,7 @@ public class SocialNetwork {
 		try {
 			return conn.createStatement().executeQuery(sql);
 		} catch (SQLException e) {
+			System.out.println("Error here");
 			e.printStackTrace();
 			return null;
 		}
