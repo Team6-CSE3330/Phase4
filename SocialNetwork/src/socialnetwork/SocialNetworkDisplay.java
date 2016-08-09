@@ -34,9 +34,11 @@ public class SocialNetworkDisplay extends JFrame {
 	JList<String> nameList;
 	JList<String> searchList;
 	JList<String> messageList;
+        JList<String> publicMessageList; 
 	DefaultListModel<String> nameListModel = new DefaultListModel<>(); 
 	DefaultListModel<String> messageListModel = new DefaultListModel<>(); 
 	DefaultListModel<String> searchListModel = new DefaultListModel<>(); 
+        DefaultListModel<String> publicMessageListModel = new DefaultListModel<>();
 
 	JFrame mainwindow = new JFrame();
 	JFrame PopUpWindow = new JFrame();
@@ -46,6 +48,7 @@ public class SocialNetworkDisplay extends JFrame {
 	JPanel RightMessageArea = new JPanel();
 	JPanel LeftFriendSearchArea = new JPanel();
 	JPanel AddFriendPopUpWindow = new JPanel();
+        JPanel CenterMessageArea = new JPanel();
 
 	JButton sendbutton = new JButton("SEND");
 	JButton searchbutton = new JButton("SEARCH");
@@ -79,9 +82,16 @@ public class SocialNetworkDisplay extends JFrame {
 		LeftFriendSearchArea.add(searchtext);
 		LeftFriendSearchArea.add(searchbutton);  
 
-		CenterMainWindow.setBackground(Color.GRAY);
+		CenterMainWindow.setBackground(Color.WHITE);
 		CenterMainWindow.setPreferredSize(new Dimension(450,450));
+            
+                CenterMessageArea.setBackground(Color.WHITE);
+                CenterMessageArea.setPreferredSize(new Dimension(450,450));
 
+                publicMessageList = new JList<>(publicMessageListModel); 
+                CenterMainWindow.add(CenterMessageArea);
+                CenterMessageArea.add(publicMessageList);
+                
 		RightMainWindow.setLayout(new GridLayout(3,1));
 		RightMainWindow.setBackground(Color.WHITE);
 		RightMainWindow.setPreferredSize(new Dimension(450,450));
@@ -90,6 +100,7 @@ public class SocialNetworkDisplay extends JFrame {
 		RightMessageArea.setPreferredSize(new Dimension(100,300));
 		RightMessageArea.add(textfield);
 		RightMessageArea.add(sendbutton);
+                
 
 		friendsAreaSetup();   
 		
@@ -125,7 +136,28 @@ public class SocialNetworkDisplay extends JFrame {
 
 		mainwindow.setVisible(true);
 	}
+        
+        public void publicMessageAreaSetup(int friend) throws SQLException {
+                CenterMainWindow.removeAll();
+		CenterMainWindow.revalidate();
+		CenterMainWindow.repaint();
 
+		publicMessageListModel.clear();
+		try {
+			ResultSet r = sn.viewPrivateMessages(myid, myfriendsids.get(friend));
+			while(r.next())	{
+                            publicMessageListModel.addElement(r.getString("Message") + " @ " + r.getString("Timestamp_"));
+			}
+		} catch (ArrayIndexOutOfBoundsException aiobe) {
+			System.out.println("no friends in list currently");
+			publicMessageListModel.addElement("");
+		}
+
+		publicMessageList = new JList<>(publicMessageListModel); 
+
+		CenterMessageArea.add(publicMessageList);
+		CenterMainWindow.add(CenterMessageArea, BorderLayout.SOUTH);
+	}
 	public void messageAreaSetup(int friend) throws SQLException {   
 		RightMainWindow.removeAll();
 		RightMainWindow.revalidate();
@@ -171,6 +203,7 @@ public class SocialNetworkDisplay extends JFrame {
 				if(!e.getValueIsAdjusting()) {
 					try {
 						messageAreaSetup(nameList.getSelectedIndex());
+                                                publicMessageAreaSetup(nameList.getSelectedIndex());
 					} catch (SQLException ex) {
 						Logger.getLogger(SocialNetworkDisplay.class.getName()).log(Level.SEVERE, null, ex);
 					}
