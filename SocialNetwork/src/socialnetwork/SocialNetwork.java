@@ -230,6 +230,8 @@ public class SocialNetwork {
 	private int executeUpdate(String sql) {
 		try {
 			return conn.createStatement().executeUpdate(sql);
+		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException exc) {
+			return 0;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return 0;
