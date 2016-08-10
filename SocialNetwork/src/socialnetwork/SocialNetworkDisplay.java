@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JScrollPane;
 
 
 public class SocialNetworkDisplay extends JFrame {
@@ -58,6 +59,8 @@ public class SocialNetworkDisplay extends JFrame {
 	JTextField textfield = new JTextField(25);
 	JTextField searchtext = new JTextField(25);
         JTextField publicmtextfield = new JTextField(25);
+        
+        JScrollPane scrollPane = new JScrollPane();
 
 	public static void main(String [] args) throws IOException, SQLException
 	{
@@ -111,6 +114,13 @@ public class SocialNetworkDisplay extends JFrame {
 		RightMessageArea.add(textfield);
 		RightMessageArea.add(sendbutton);
                 
+                scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+                scrollPane.setBounds(50, 30, 300, 50);
+                
+                
+                
+
                 
                
                 
@@ -122,9 +132,9 @@ public class SocialNetworkDisplay extends JFrame {
                 publicmsendbutton.addActionListener(new ActionListener() { 
 			@Override
 			public void actionPerformed(ActionEvent e) { 
-				sn.createPublicMessage(myid, textfield.getText());
+				sn.createPublicMessage(myid, publicmtextfield.getText());
 				try {
-					publicMessageAreaSetup(nameList.getSelectedIndex());
+					publicMessageAreaSetup();
 					//updatePrivateMessages with Text 
 				} catch (SQLException ex) {
 					Logger.getLogger(SocialNetworkDisplay.class.getName()).log(Level.SEVERE, null, ex);
@@ -164,7 +174,7 @@ public class SocialNetworkDisplay extends JFrame {
 		mainwindow.setVisible(true);
 	}
         
-        public void publicMessageAreaSetup(int friend) throws SQLException {
+        public void publicMessageAreaSetup() throws SQLException {
                 CenterMainWindow.removeAll();
 		CenterMainWindow.revalidate();
 		CenterMainWindow.repaint();
@@ -173,7 +183,7 @@ public class SocialNetworkDisplay extends JFrame {
 		try {
 			ResultSet r = sn.viewPublicMessages(myid);
 			while(r.next())	{
-                            publicMessageListModel.addElement(r.getString("Message") + " @ " + r.getString("Timestamp_"));
+                            publicMessageListModel.addElement(r.getString("Name") + " : " + r.getString("Message") + " @ " + r.getString("Timestamp_"));
 			}
 		} catch (ArrayIndexOutOfBoundsException aiobe) {
 			System.out.println("no friends in list currently");
@@ -184,6 +194,7 @@ public class SocialNetworkDisplay extends JFrame {
 
 		CenterMainWindow.add(publicMessageList);
 		CenterMainWindow.add(CenterMessageArea, BorderLayout.SOUTH);
+                CenterMessageArea.add(scrollPane);
 //                publicMessageListModel.clear();
 	}
 	public void messageAreaSetup(int friend) throws SQLException {   
@@ -231,7 +242,7 @@ public class SocialNetworkDisplay extends JFrame {
 				if(!e.getValueIsAdjusting()) {
 					try {
 						messageAreaSetup(nameList.getSelectedIndex());
-                                                publicMessageAreaSetup(nameList.getSelectedIndex());
+                                                publicMessageAreaSetup();
 					} catch (SQLException ex) {
 						Logger.getLogger(SocialNetworkDisplay.class.getName()).log(Level.SEVERE, null, ex);
 					}
