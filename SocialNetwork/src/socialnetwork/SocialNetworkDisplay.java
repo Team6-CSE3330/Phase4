@@ -93,6 +93,7 @@ public class SocialNetworkDisplay extends JFrame {
 		LeftFriendSearchArea.add(searchtext);
 		LeftFriendSearchArea.add(searchbutton);  
 
+                CenterMainWindow.setLayout(new GridLayout(3,1)); 
 		CenterMainWindow.setBackground(Color.WHITE);
 		CenterMainWindow.setPreferredSize(new Dimension(450,450));
             
@@ -101,8 +102,8 @@ public class SocialNetworkDisplay extends JFrame {
 
     //            publicMessageList = new JList<>(publicMessageListModel); 
                 CenterMainWindow.add(CenterMessageArea);
-                CenterMessageArea.add(publicmtextfield);
-                CenterMessageArea.add(publicmsendbutton);
+                CenterMessageArea.add(publicmtextfield, BorderLayout.SOUTH);
+                CenterMessageArea.add(publicmsendbutton, BorderLayout.SOUTH);
   //              CenterMessageArea.add(publicMessageList);
                 
 		RightMainWindow.setLayout(new GridLayout(3,1));

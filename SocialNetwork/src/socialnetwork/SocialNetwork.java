@@ -122,18 +122,7 @@ public class SocialNetwork {
 	public ResultSet viewPublicMessages(int myID) {
 		ResultSet r = getAllFriends(myID);
 		String sql = "";
-		try {
-			while(r.next()) {
-				sql 
-				= "select pub.Timestamp_, pub.Message, member.Name "
-						+ "from public_message as pub, member "
-						+ "where pub.Owner_ID =" + r.getString("Member_ID") + " or pub.Owner_ID =" + myID
-						+ " and " + " member.Member_ID =" + r.getString("Member_ID") + " "
-						+ "order by Timestamp_ desc;";
-			}
-		} catch (SQLException e) {
-			
-		}
+
 		sql = "select public.Timestamp_, public.Message, member.Name "
 				+ "from member, public_message as public "
 				+ "where public.Owner_ID = member.Member_ID "
