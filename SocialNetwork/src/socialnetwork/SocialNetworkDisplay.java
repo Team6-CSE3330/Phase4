@@ -53,9 +53,11 @@ public class SocialNetworkDisplay extends JFrame {
 	JButton sendbutton = new JButton("SEND");
 	JButton searchbutton = new JButton("SEARCH");
 	JButton addbutton = new JButton("ADD");
+        JButton publicmsendbutton = new JButton("SEND");
 
 	JTextField textfield = new JTextField(25);
 	JTextField searchtext = new JTextField(25);
+        JTextField publicmtextfield = new JTextField(25);
 
 	public static void main(String [] args) throws IOException, SQLException
 	{
@@ -94,9 +96,11 @@ public class SocialNetworkDisplay extends JFrame {
                 CenterMessageArea.setBackground(Color.WHITE);
                 CenterMessageArea.setPreferredSize(new Dimension(450,450));
 
-                publicMessageList = new JList<>(publicMessageListModel); 
+    //            publicMessageList = new JList<>(publicMessageListModel); 
                 CenterMainWindow.add(CenterMessageArea);
-                CenterMessageArea.add(publicMessageList);
+                CenterMessageArea.add(publicmtextfield);
+                CenterMessageArea.add(publicmsendbutton);
+  //              CenterMessageArea.add(publicMessageList);
                 
 		RightMainWindow.setLayout(new GridLayout(3,1));
 		RightMainWindow.setBackground(Color.WHITE);
@@ -107,11 +111,28 @@ public class SocialNetworkDisplay extends JFrame {
 		RightMessageArea.add(textfield);
 		RightMessageArea.add(sendbutton);
                 
+                
+               
+                
 
 		friendsAreaSetup();   
 		
 		//POP-UP WINDOW ITEMS
 
+                publicmsendbutton.addActionListener(new ActionListener() { 
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+				sn.createPublicMessage(myid, textfield.getText());
+				try {
+					publicMessageAreaSetup(nameList.getSelectedIndex());
+					//updatePrivateMessages with Text 
+				} catch (SQLException ex) {
+					Logger.getLogger(SocialNetworkDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				}
+				publicmtextfield.setText("");
+
+			} 
+		});
 		sendbutton.addActionListener(new ActionListener() { 
 			@Override
 			public void actionPerformed(ActionEvent e) { 
@@ -150,7 +171,7 @@ public class SocialNetworkDisplay extends JFrame {
 
 		publicMessageListModel.clear();
 		try {
-			ResultSet r = sn.viewPrivateMessages(myid, myfriendsids.get(friend));
+			ResultSet r = sn.viewPublicMessages(myid);
 			while(r.next())	{
                             publicMessageListModel.addElement(r.getString("Message") + " @ " + r.getString("Timestamp_"));
 			}
@@ -161,8 +182,9 @@ public class SocialNetworkDisplay extends JFrame {
 
 		publicMessageList = new JList<>(publicMessageListModel); 
 
-		CenterMessageArea.add(publicMessageList);
+		CenterMainWindow.add(publicMessageList);
 		CenterMainWindow.add(CenterMessageArea, BorderLayout.SOUTH);
+//                publicMessageListModel.clear();
 	}
 	public void messageAreaSetup(int friend) throws SQLException {   
 		RightMainWindow.removeAll();
