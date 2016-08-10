@@ -120,11 +120,20 @@ public class SocialNetwork {
 	}
 
 	public ResultSet viewPublicMessages(int myID) {
-		String sql 
-		= "select Timestamp_, Message "
-				+ "from public_message "
-				+ "where Owner_ID =" + myID
-				+ "order by Timestamp_ asc;";
+		ResultSet r = getAllFriends(myID);
+		String sql = "";
+		try {
+			while(r.next()) {
+				sql 
+				= "select pub.Timestamp_, pub.Message, member.Name "
+						+ "from public_message as pub, member "
+						+ "where pub.Owner_ID =" + r.getString("Member_ID") + " or pub.Owner_ID =" + myID
+						+ " and " + " member.Member_ID =" + r.getString("Member_ID") + " "
+						+ "order by Timestamp_ des;";
+			}
+		} catch (SQLException e) {
+			
+		}
 		return executeQuery(sql);
 	}
 
@@ -191,8 +200,8 @@ public class SocialNetwork {
 		String timestamp = new Date().toString();
 		String sql;
 		sql = "insert into public_message "
-				+ "values (" + myID + ", \"" + timestamp + "\", \"" + msg
-				+ "\");";
+				+ "values (" + myID + ", '" + timestamp + "', '" + msg
+				+ "');";
 		return 0 < executeUpdate(sql);
 	}
 
