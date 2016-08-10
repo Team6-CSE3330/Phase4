@@ -129,11 +129,26 @@ public class SocialNetwork {
 						+ "from public_message as pub, member "
 						+ "where pub.Owner_ID =" + r.getString("Member_ID") + " or pub.Owner_ID =" + myID
 						+ " and " + " member.Member_ID =" + r.getString("Member_ID") + " "
-						+ "order by Timestamp_ des;";
+						+ "order by Timestamp_ desc;";
 			}
 		} catch (SQLException e) {
 			
 		}
+		sql = "select public.Timestamp_, public.Message, member.Name "
+				+ "from member, public_message as public "
+				+ "where public.Owner_ID = member.Member_ID "
+				+ "and public.Owner_ID IN ("
+				+	"SELECT MEMBER.Member_ID "
+				+	"FROM MEMBER "
+				+	"WHERE MEMBER.Member_ID IN ("
+				+		"SELECT FRIEND_OF.Member_ID "
+				+		"FROM FRIEND_OF "
+				+		"WHERE FRIEND_OF.Owner_ID = " + myID + ") "
+				+	"or Member.Member_ID = " + myID + ") "
+				+ "and public.Timestamp_ not in ( "
+				+	"select private_message.Timestamp_ "
+				+    "from private_message"
+				+") order by Timestamp_ desc;";
 		return executeQuery(sql);
 	}
 
